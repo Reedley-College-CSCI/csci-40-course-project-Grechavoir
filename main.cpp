@@ -16,6 +16,19 @@ I don't know if I want to add an a cost system or not but if I do I would keep a
 #include <iomanip>
 #include <fstream>
 
+using namespace std;
 int main() {
+    cout << "Hello..." << endl << "Enter your name:" << endl;
+
+    string charName;
+    getline(cin, charName);
+
+    cout << "Welcome to the Space Exploration Journey!" << endl;
+    cout << "You have been drafted to venture the cosmos and"
+         << " be a hero for your home planet!" << endl;
+    cout << "Do not fear the darkness of space, but look forward to the"
+         << " nearest star!" << endl;
+    cout << "Godspeed " << charName << "!" << endl;
+
     return 0;
 }
