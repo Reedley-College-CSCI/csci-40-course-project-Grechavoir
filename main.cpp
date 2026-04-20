@@ -19,6 +19,7 @@ I don't know if I want to add an a cost system or not but if I do I would keep a
 using namespace std;
 
 void printPlanets(); // Function prototype to print planet names from a file
+void loadRoutes(); // Function prototype to load routes from a file
 double calculateDistance(const string& from, const string& to); // Function prototype to calculate distance between planets
 
 struct Route {
@@ -28,14 +29,14 @@ struct Route {
 };
 
 const int MAX_ROUTES = 100; // Maximum number of routes
+const int MAX_PLANETS = 8; // Maximum number of planets
 Route routes[MAX_ROUTES]; // Array to store routes
-
+int routeCount = 0; // Variable to keep track of the number of routes
 double MAX_FUEL = 1000.0; // Maximum fuel capacity
 
 int main() {
      cout << fixed << setprecision(2); // Set decimal precision for output
 
-     int routeCount = 0; // Variable to keep track of the number of routes
      double fuel = 1000.0; // Initial fuel
      double fuelPercentage = (fuel / MAX_FUEL) * 100;
 
@@ -90,21 +91,40 @@ int main() {
 
 //Print planet names
 void printPlanets() {
-    fstream infile("planets.txt");
+    fstream infile("planets.txt"); // Open the file for reading
+
+    int count = 0; // Variable to keep track of the number of planets
 
     if (!infile) {
         cout << "Error: Could not open planets.txt\n";
         return;
-    }
+    } // Check if the file was opened successfully
 
     string planet;
 
     cout << "\nAvailable Planets:\n";
 
-    while (getline(infile, planet)) {
+    while (count < MAX_PLANETS && getline(infile, planet)) {
         cout << "- " << planet << endl;
+        count++;
     }
 
+    infile.close();
+}
+
+// Open the routes.txt file and read the routes into the routes array
+void loadRoutes() {
+     fstream infile("routes.txt"); // Open the file for reading
+
+    if (!infile) {
+        cout << "Error: Could not open routes.txt\n";
+        return;
+    } // Check if the file was opened successfully
+
+    while (routeCount < MAX_ROUTES && infile >> routes[routeCount].from >> routes[routeCount].to >> routes[routeCount].distance) {
+        routeCount++;
+    }
+    
     infile.close();
 }
 
