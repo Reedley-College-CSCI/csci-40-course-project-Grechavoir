@@ -21,6 +21,7 @@ using namespace std;
 void printPlanets(); // Function prototype to print planet names from a file
 void loadRoutes(); // Function prototype to load routes from a file
 double calculateDistance(const string& from, const string& to); // Function prototype to calculate distance between planets
+double calculateFuelNeeded(double distance); // Function prototype to calculate fuel needed for a trip
 
 struct Route {
     string from; // Origin
@@ -30,28 +31,35 @@ struct Route {
 
 struct Material {
     string name; // Name of the material
-    double amount; // Amount of material (kg, liters, etc.)
+    double amount; // Amount of material (tons)
     double cost; // Cost per unit
 };
 
-const int MAX_ROUTES = 100; // Maximum number of routes
-const int MAX_PLANETS = 8; // Maximum number of planets
+const int MAX_ROUTES = 100; // Maximum number of routea
 Route routes[MAX_ROUTES]; // Array to store routes
 int routeCount = 0; // Variable to keep track of the number of routes
-double MAX_FUEL = 1000.0; // Maximum fuel capacity
-double income = 0.0; // Variable to track income
-double FLAT_DAY_PAY_RATE = 2000.0; // Flat pay rate for each day of travel
-int rateOfSpeed = 100; // Speed of the spaceship in million kilometers per day
-int daysTraveled = 0; // Variable to track the number of days traveled
+const int MAX_PLANETS = 8; // Maximum number of planets
+
 const int MAX_MATERIALS = 100; // Maximum number of materials
 string materials[MAX_MATERIALS]; // Array to store materials
 int materialCount = 0; // Variable to keep track of the number of materials
+double kilogramToTon = 907.18; // Conversion factor from kilograms to tons
+double MAX_CARGO_WEIGHT = 50; // Maximum cargo weight in tons
+
+int hoursTraveled = 0; // Variable to track the number of hours traveled
+double MAX_TOTAL_HOURS = 17520; // Maximum total hours for 2 year mission
+double income = 0.0; // Variable to track income
+double FLAT_RATE_PAY_HOUR = 200.0; // Flat pay rate for each hour of travel
+
+double MAX_FUEL = 2500.0; // Maximum fuel capacity
+double FLAT_FUEL_CONSUMPTION_RATE = 0.5; // Flat fuel consumption rate per million kilometers
+int rateOfSpeed = 100; // Speed of the spaceship in million kilometers per day
 
 int main() {
-     cout << fixed << setprecision(2); // Set decimal precision for output
+    cout << fixed << setprecision(2); // Set decimal precision for output
 
-     double fuel = 1000.0; // Initial fuel
-     double fuelPercentage = (fuel / MAX_FUEL) * 100;
+    double fuel = 2500.0; // Initial fuel
+    double fuelPercentage = (fuel / MAX_FUEL) * 100;
 
     cout << "Hello..." << endl << "Enter your name:" << endl;
 
@@ -102,12 +110,28 @@ int main() {
     double distance = -1; // Initialize distance to an invalid value
     distance = calculateDistance(origin, destination);
 
-     if (distance < 0) {
+    if (distance < 0) {
           cout << "Unable to calculate distance." << endl;
           return 0;
-     }
+    }
 
-     cout << "The distance from " << origin << " to " << destination << " is " << distance << " million kilometers." << endl;
+    cout << "The distance from " << origin << " to " << destination << " is " << distance << " million kilometers." << endl;
+
+    cout << "Calculating fuel needed for the trip..." << endl;
+
+    double fuelNeeded = calculateFuelNeeded(distance);
+    cout << "Fuel needed for the trip: " << fuelNeeded << " units." << endl;
+
+    if (fuelNeeded > fuel) {
+        cout << "You do not have enough fuel for this trip. Please choose another destination." << endl;
+        return 0;
+    }
+    else {
+        fuel -= fuelNeeded; // Update fuel after the trip
+        fuelPercentage = (fuel / MAX_FUEL) * 100; // Update fuel percentage
+        cout << "You have successfully traveled to " << destination << "!" << endl;
+        cout << "Remaining fuel: " << fuelPercentage << "%." << endl;
+    }
     
     return 0;
 }
@@ -154,10 +178,16 @@ void loadRoutes() {
 //calculate distance between planets
 double calculateDistance(const string& from, const string& to) {
      for (int i = 0; i < routeCount; i++) {
-          if (routes[i].from == from && routes[i].to == to) {
-               return routes[i].distance;
-          }
-     }
-     cout << "Error: Route from " << from << " to " << to << " not found.\n";
-     return -1; // indicate that the route was not found
+        if (routes[i].from == from && routes[i].to == to) {
+            return routes[i].distance;
+        }
+    }
+    cout << "Error: Route from " << from << " to " << to << " not found.\n";
+    return -1; // indicate that the route was not found
+}
+
+//calculate fuel needed for a trip
+double calculateFuelNeeded(double distance) {
+    double fuelNeeded = distance * FLAT_FUEL_CONSUMPTION_RATE;
+    return fuelNeeded;
 }
