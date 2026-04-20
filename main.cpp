@@ -57,6 +57,7 @@ int main() {
     cout << "Your spaceship is at " << fuelPercentage << "% fuel." << endl;
 
     printPlanets(); // Call the function to print planet names
+    loadRoutes(); // Call the function to load routes from the file
 
     string destination;
     string origin = "Earth"; // Starting point
@@ -64,11 +65,10 @@ int main() {
     cout << "You are currently on " << origin << ". Where would you like to go?" << endl;
     getline(cin, destination);
 
-    destination[0] = toupper(destination[0]); // Capitalize the first letter of the destination
-
     for (int i = 0; i < destination.length(); i++) {
         destination[i] = tolower(destination[i]); // Convert the rest of the letters to lowercase
     }
+    destination[0] = toupper(destination[0]); // Capitalize the first letter of the destination
 
     if (destination == "Earth") {
         cout << "You are already on Earth! Please choose a different destination." << endl;
@@ -85,6 +85,16 @@ int main() {
     }
 
     cout << "Calculating route from " << origin << " to " << destination << "..." << endl;
+
+    double distance = -1; // Initialize distance to an invalid value
+    distance = calculateDistance(origin, destination);
+
+     if (distance < 0) {
+          cout << "Unable to calculate distance." << endl;
+          return 0;
+     }
+
+     cout << "The distance from " << origin << " to " << destination << " is " << distance << " million kilometers." << endl;
     
     return 0;
 }
@@ -129,3 +139,12 @@ void loadRoutes() {
 }
 
 //calculate distance between planets
+double calculateDistance(const string& from, const string& to) {
+     for (int i = 0; i < routeCount; i++) {
+          if (routes[i].from == from && routes[i].to == to) {
+               return routes[i].distance;
+          }
+     }
+     cout << "Error: Route from " << from << " to " << to << " not found.\n";
+     return -1; // indicate that the route was not found
+}
